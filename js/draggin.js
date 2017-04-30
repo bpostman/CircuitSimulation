@@ -16,6 +16,13 @@ var Type = {
     GATE: 'gateGrid'
 };
 
+var Gate = {
+    NAND: 'NAND',
+    NOR: 'NOR',
+    AND: 'AND',
+    OR: 'OR'
+};
+
 function init() {
 
 /*******************************************************************/
@@ -125,14 +132,14 @@ function handleDropEvent() {
 
         if (currentDrop.hasClass('droppable')) {
 
-            if (element.hasClass('NAND'))
-                currentDrop.addClass('NAND');
-            else if (element.hasClass('NOR'))
-                currentDrop.addClass('NOR');
-            else if (element.hasClass('AND'))
-                currentDrop.addClass('AND');
-            else if (element.hasClass('OR'))
-                currentDrop.addClass('OR');
+            if (element.hasClass(Gate.NAND))
+                currentDrop.addClass(Gate.NAND);
+            else if (element.hasClass(Gate.NOR))
+                currentDrop.addClass(Gate.NOR);
+            else if (element.hasClass(Gate.AND))
+                currentDrop.addClass(Gate.AND);
+            else if (element.hasClass(Gate.OR))
+                currentDrop.addClass(Gate.OR);
 
             currentDrop.addClass('hasGate');
             currentDrop.removeClass('clickable');
@@ -242,8 +249,92 @@ function start() {
 
 function processGate(source) {
 
+    //-----------------------------------------------------------------
+    //Get Source Info
+
+    //Get info on source
+    var sourceRow = source.data('row');
+    var sourceCol = source.data('col');
+    var gateType;
+
+    if (source.hasClass(Gate.NAND))
+        gateType = Gate.NAND;
+    else if (source.hasClass(Gate.NOR))
+        gateType = Gate.NOR;
+    else if (source.hasClass(Gate.AND))
+        gateType = Gate.AND;
+    else if (source.hasClass(Gate.OR))
+        gateType = Gate.OR;
+    else {
+        alert("No valid gate type supplied for: " + sourceRow + ", " + sourceCol);
+        return -1;
+    }
 
 
+    //-----------------------------------------------------------------
+    //Get info on the iWires for this gate, perform some validation
+
+    var top = $('.' + sourceRow.toString() + (sourceCol - 2).toString());
+    var bottom = $('.' + sourceRow.toString() + (sourceCol - 1).toString());
+
+    //Return if top and bottom iWires are not either split or right
+    if (!(top.hasClass(Dir.RIGHT) || top.hasClass(Dir.SPLIT)) &&
+        !(bottom.hasClass(Dir.RIGHT) || bottom.hasClass(Dir.RIGHT))) {
+            alert("Gate at: " + sourceRow + ", " + sourceCol + " does not have two valid iWire inputs");
+            return -1;
+    }
+
+    var input1 = top.data('value');
+    var input2 = bottom.data('value');
+
+    //-----------------------------------------------------------------
+    //Get and set destination info
+
+    //Get destination positions
+    var destRow = sourceRow;
+    var destCol = sourceCol + 1;
+    var output;
+    var dest = $('.' + destRow.toString() + destCol.toString());
+
+    //-----------------------------------------------------------------
+    //Depending on gate type, set output appropriately
+
+    if (gateType === Gate.NAND) {
+        if (input1 === 1 && input2 === 1)
+            output = 0;
+        else
+            output = 1;
+    }
+
+    else if (gateType === Gate.NOR) {
+        if (input1 === 0 && input2 === 0)
+            output = 1;
+        else
+            output = 0;
+    }
+
+    else if (gateType === Gate.AND) {
+        if (input1 === 1 && input2 === 1)
+            output = 1;
+        else
+            output = 0;
+    }
+
+    else if (gateType === Gate.OR) {
+        if (input1 === 1 || input2 === 1)
+            output = 1;
+        else
+            output = 0;
+    }
+
+    //-----------------------------------------------------------------
+    //Store value in destination
+
+    dest.data('value', output);
+    if (output === 0)
+        dest.addClass('zero');
+    else if (output === 1)
+        dest.addClass('one');
 }
 
 //Returns destination element starting from an oWireGrid
