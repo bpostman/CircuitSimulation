@@ -5,7 +5,6 @@ var setup;
 //Enums for grid type and direction
 var Dir = {
     RIGHT: 'right',
-    ELBOW: 'elbow',
     DOWN: 'down',
     SPLIT: 'split'
 };
@@ -71,10 +70,8 @@ function init() {
                 grid.removeClass(Dir.RIGHT);
                 if (grid.data('row') !== 7 || grid.data('col') % 2 === 0)
                     grid.addClass(Dir.DOWN);
-                else if (grid.hasClass(Type.OWIRE))
-                    grid.removeClass('active');
                 else
-                    grid.addClass(Dir.ELBOW);
+                    grid.removeClass('active');
             }
 
             //If grid is active with down, remove down and add right_down
@@ -83,17 +80,9 @@ function init() {
                 grid.addClass(Dir.SPLIT);
             }
 
-            //If grid is active with right_down, remove right_down and active
+            //If grid is active with split, remove split and active
             else if (grid.hasClass('active') && grid.hasClass(Dir.SPLIT)) {
                 grid.removeClass(Dir.SPLIT);
-                if (grid.hasClass(Type.OWIRE) !== true)
-                    grid.addClass(Dir.ELBOW);
-                else
-                    grid.removeClass('active');
-            }
-
-            else if (grid.hasClass('active') && grid.hasClass(Dir.ELBOW)) {
-                grid.removeClass(Dir.ELBOW);
                 grid.removeClass('active');
             }
 
@@ -263,8 +252,6 @@ function fromWire(source) {
     //Get Direction
     if (source.hasClass(Dir.RIGHT))
         sourceDir = Dir.RIGHT;
-    else if (source.hasClass(Dir.ELBOW))
-        sourceDir = Dir.ELBOW;
     else if (source.hasClass(Dir.DOWN))
         sourceDir = Dir.DOWN;
     else if (source.hasClass(Dir.SPLIT))
@@ -305,8 +292,7 @@ function fromWire(source) {
     //-----------------------------------------------------------------
     //Check source properties, execute appropriate logic
 
-    //Handle for right and elbow cases
-    if (sourceDir === Dir.RIGHT || sourceDir === Dir.ELBOW) {
+    if (sourceDir === Dir.RIGHT) {
 
         if (sourceType === Type.OWIRE) {
             destRow1 = sourceRow;
@@ -407,12 +393,6 @@ function fromWire(source) {
     var dest1 = $('.' + destRow1.toString() + destCol1.toString());
     if (split)
         var dest2 = $('.' + destRow2.toString() + destCol2.toString());
-
-    //Check for valid connection (if source is down or split, dest must not be right)
-    if (sourceDir === Dir.DOWN && dest1.hasClass(Dir.RIGHT))
-        dest1 = null;
-    if (sourceDir === Dir.SPLIT && dest2.hasClass(Dir.RIGHT))
-        dest2 = null;
 
     //Assign values to destination grid(s), assuming valid connection
     if (dest1) {
