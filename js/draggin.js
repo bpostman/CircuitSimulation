@@ -224,9 +224,9 @@ function start() {
                     fromGate(source);
             }
 
-            else {
+           /* else {
                 source.css('background-color', 'red');
-            }
+            }*/
 
         });
     }
@@ -238,6 +238,7 @@ function fromGate(source) {
 
 //Returns destination element starting from an oWireGrid
 function fromWire(source) {
+    alert('hit');
 
     //-----------------------------------------------------------------
     //Get Source Info
@@ -276,6 +277,8 @@ function fromWire(source) {
         source.css('background-color', 'red');
         return -1;
     }
+
+    alert(sourceType);
 
     //-----------------------------------------------------------------
     //Declare destination placeholders
@@ -327,6 +330,7 @@ function fromWire(source) {
         }
 
         else if (sourceType === Type.IWIRE) {
+            alert("OH HEY");
             //Source is top iWire
             if (sourceCol % 2 === 0) {
                 destRow1 = sourceRow;
@@ -335,6 +339,7 @@ function fromWire(source) {
 
             //Source is bottom iWire
             else {
+                alert("HEYOH");
                 destRow1 = sourceRow + 1;
                 destCol1 = sourceCol;
             }
@@ -368,6 +373,7 @@ function fromWire(source) {
             }
             //Source is bottom iWire
             else {
+                alert("HEYOH");
                 //Right
                 destRow1 = sourceRow;
                 destCol1 = sourceCol + 1;
@@ -400,6 +406,8 @@ function fromWire(source) {
             dest1.addClass('zero');
         else if (sourceVal === 1)
             dest1.addClass('one');
+
+        dest1.data('value', sourceVal);
     }
 
     if (split && dest2) {
@@ -409,6 +417,9 @@ function fromWire(source) {
             dest2.addClass('zero');
         else if (sourceVal === 1)
             dest2.addClass('one');
+
+
+        dest2.data('value', sourceVal);
     }
 }
 
