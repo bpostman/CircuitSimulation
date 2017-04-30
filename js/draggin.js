@@ -227,9 +227,9 @@ function start() {
             //Only check for connection if this grid has a value
             if (source.data("value") !== undefined) {
                 if (source.hasClass('wireGrid'))
-                    fromWire(source);
-                else if (source.hasClass('gateGrid'))
-                    fromGate(source);
+                    processWire(source);
+                else if (source.hasClass('hasGate'))
+                    processGate(source);
             }
 
            /* else {
@@ -240,12 +240,14 @@ function start() {
     }
 }
 
-function fromGate(source) {
+function processGate(source) {
+
+
 
 }
 
 //Returns destination element starting from an oWireGrid
-function fromWire(source) {
+function processWire(source) {
 
     //-----------------------------------------------------------------
     //Get Source Info
@@ -414,31 +416,43 @@ function fromWire(source) {
     //-----------------------------------------------------------------
     //Get destinations, perform some validation, set destination values
 
+    //Gets set to true if the dest is a wire grid
+    var dest1Wire = false;
+    var dest2Wire = false;
+
     //Set destination(s)
     var dest1 = $('.' + destRow1.toString() + destCol1.toString());
-    if (split)
+    if (dest1.hasClass('wireGrid'))
+        dest1Wire = true;
+    if (split) {
         var dest2 = $('.' + destRow2.toString() + destCol2.toString());
+        if (dest2.hasClass('wireGrid'))
+            dest2Wire = true;
+    }
 
     //Assign values to destination grid(s), assuming valid connection
     if (dest1) {
-        if (sourceVal === 0)
-            dest1.addClass('zero');
-        else if (sourceVal === 1)
-            dest1.addClass('one');
-
         dest1.data('value', sourceVal);
+
+        if (dest1Wire)
+            if (sourceVal === 0)
+                dest1.addClass('zero');
+            else if (sourceVal === 1)
+                dest1.addClass('one');
+
     }
 
     if (split && dest2) {
         //Assign values to destination grid(s)
-        dest2.addClass('active');
-        if (sourceVal === 0)
-            dest2.addClass('zero');
-        else if (sourceVal === 1)
-            dest2.addClass('one');
-
-
         dest2.data('value', sourceVal);
+
+        if (dest2Wire)
+            if (sourceVal === 0)
+                dest2.addClass('zero');
+            else if (sourceVal === 1)
+                dest2.addClass('one');
+
+
     }
 }
 
