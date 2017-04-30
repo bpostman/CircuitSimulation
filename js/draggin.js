@@ -67,9 +67,17 @@ function init() {
 
             //If grid is active with right, remove right, add down
             if (grid.hasClass('active') && grid.hasClass(Dir.RIGHT)) {
+
                 grid.removeClass(Dir.RIGHT);
-                if (grid.data('row') !== 7 || grid.data('col') % 2 === 0)
+
+                //tWire can only go down into an iWire row, which is every fourth row starting at 3rd
+                if (grid.hasClass(Type.TWIRE) && grid.data('col') % 4 !== 3)
+                    grid.removeClass('active');
+
+                //Bottom row cannot go down,
+                else if (grid.data('row') !== 7 || grid.data('col') % 2 === 0)
                     grid.addClass(Dir.DOWN);
+
                 else
                     grid.removeClass('active');
             }
@@ -238,7 +246,6 @@ function fromGate(source) {
 
 //Returns destination element starting from an oWireGrid
 function fromWire(source) {
-    alert('hit');
 
     //-----------------------------------------------------------------
     //Get Source Info
@@ -277,8 +284,6 @@ function fromWire(source) {
         source.css('background-color', 'red');
         return -1;
     }
-
-    alert(sourceType);
 
     //-----------------------------------------------------------------
     //Declare destination placeholders
@@ -330,7 +335,6 @@ function fromWire(source) {
         }
 
         else if (sourceType === Type.IWIRE) {
-            alert("OH HEY");
             //Source is top iWire
             if (sourceCol % 2 === 0) {
                 destRow1 = sourceRow;
@@ -339,10 +343,15 @@ function fromWire(source) {
 
             //Source is bottom iWire
             else {
-                alert("HEYOH");
                 destRow1 = sourceRow + 1;
                 destCol1 = sourceCol;
             }
+        }
+
+        //If tWire has down, it is going to a top iWire
+        else if (sourceType === Type.TWIRE) {
+            destRow1 = sourceRow + 1;
+            destCol1 = sourceCol - 1;
         }
     }
 
@@ -373,7 +382,6 @@ function fromWire(source) {
             }
             //Source is bottom iWire
             else {
-                alert("HEYOH");
                 //Right
                 destRow1 = sourceRow;
                 destCol1 = sourceCol + 1;
@@ -382,6 +390,17 @@ function fromWire(source) {
                 destRow2 = sourceRow + 1;
                 destCol2 = sourceCol;
             }
+        }
+
+        //If tWire has a split, down segment is going to a top iWire
+        else if (sourceType === Type.TWIRE) {
+            //Right
+            destRow1 = sourceRow;
+            destCol1 = sourceCol + 1;
+
+            //Down
+            destRow2 = sourceRow + 1;
+            destCol2 = sourceCol - 1;
         }
 
         //Set this for all source directions
