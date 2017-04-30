@@ -188,6 +188,6 @@
     margin: 5px;
 }
 
-#button {
+#startButton, #nextButton {
     border: 1px solid darkseagreen;
 }
