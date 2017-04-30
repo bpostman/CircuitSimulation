@@ -1,7 +1,7 @@
 
-$( init );
-var setup;
 
+var setup;
+var scenario = 0;
 //Enums for grid type and direction
 var Dir = {
     RIGHT: 'right',
@@ -23,20 +23,16 @@ var Gate = {
     OR: 'OR'
 };
 
+$( init );
+
 function init() {
 
 /*******************************************************************/
 //Do some initial setup
 
-
-    //Set to false once user starts the game
-    setup = true;
-
-    //Assign row and column data to each grid
-    assignPositions();
-
-    //Setup for control board
-    setControlBoard();
+    //Set scenario only on first run
+    if (scenario === 0)
+        setScenario();
 
 /************************************************************************/
 //Event handler functions
@@ -51,7 +47,7 @@ function init() {
 
 
     //Click handler for gate grids
-    $('.gateGrid').click(function () {
+   /* $('.gateGrid').click(function () {
         if (setup) {
             var gate = $(this);
             if (gate.hasClass('active')) {
@@ -65,7 +61,7 @@ function init() {
             }
         }
     });
-
+*/
 
     //Click handler for wire grids
     $('.wireGrid').click(function () {
@@ -142,7 +138,6 @@ function handleDropEvent() {
                 currentDrop.addClass(Gate.OR);
 
             currentDrop.addClass('hasGate');
-            currentDrop.removeClass('clickable');
             currentDrop.removeClass('droppable');
          }
     }
@@ -157,6 +152,7 @@ function myHelper() {
 //Gives column, row, and class information to each gridsquare
 function assignPositions() {
     var lasts = [];
+
     //Set data and class for each grid square with row and column
     for (var i = 0; i < 8; i++) {
         var j = 0;
@@ -177,7 +173,9 @@ function assignPositions() {
 
     //Set last elements
     for (i = 0; i < 8; i++) {
-        $('.' + i.toString() + lasts[i].toString()).addClass('last');
+        var grid = $('.' + i.toString() + lasts[i].toString());
+        if (grid.hasClass('gateGrid'))
+            grid.addClass('last');
 
     }
 }
@@ -214,6 +212,30 @@ function getGate(num) {
     }
 }
 
+
+function setScenario() {
+
+    if (scenario === 0) {
+        //Assign row and column data to each grid
+        assignPositions();
+
+        //Setup for control board
+        setControlBoard();
+    }
+
+    //Remove all placed gates, set all wires to inactive
+    $('#breadBoard').find('*').each(function(){
+        $(this).removeClass('hasGate NAND NOR AND OR active right split down zero one');
+
+        if ($(this).hasClass('gateGrid'))
+            $(this).addClass('droppable');
+    });
+
+    setup = true;
+    
+}
+
+
 /****************************************************************************/
 
 
@@ -239,12 +261,12 @@ function start() {
                     processGate(source);
             }
 
-           /* else {
-                source.css('background-color', 'red');
-            }*/
-
         });
     }
+
+    alert("YOU FINISHED");
+    scenario++;
+    setScenario();
 }
 
 function processGate(source) {
@@ -359,7 +381,7 @@ function processWire(source) {
         sourceDir = Dir.SPLIT;
     else {
         //alert('NO VALID DIRECTION FROM SOURCE AT: ' + sourceRow + ", " +sourceCol);
-        source.css('background-color', 'red');
+        //source.css('background-color', 'red');
         return -1;
     }
 
@@ -374,7 +396,7 @@ function processWire(source) {
         sourceType = Type.GATE;
     else {
         alert('NO VALID TYPE FROM SOURCE AT: ' + sourceRow + ", " +sourceCol);
-        source.css('background-color', 'red');
+        //source.css('background-color', 'red');
         return -1;
     }
 
@@ -410,7 +432,7 @@ function processWire(source) {
 
             //Source is bottom iWire
             else
-                destCol2 = sourceCol + 1;
+                destCol1 = sourceCol + 1;
         }
 
         else if (sourceType === Type.TWIRE) {
@@ -510,12 +532,13 @@ function processWire(source) {
     //Gets set to true if the dest is a wire grid
     var dest1Wire = false;
     var dest2Wire = false;
-
+    console.log("dest1: " + destRow1 + ", " + destCol1);
     //Set destination(s)
     var dest1 = $('.' + destRow1.toString() + destCol1.toString());
     if (dest1.hasClass('wireGrid'))
         dest1Wire = true;
     if (split) {
+        console.log("dest2: " + destRow1 + ", " + destCol1);
         var dest2 = $('.' + destRow2.toString() + destCol2.toString());
         if (dest2.hasClass('wireGrid'))
             dest2Wire = true;

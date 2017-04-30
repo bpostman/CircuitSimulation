@@ -164,6 +164,10 @@
     background-image: url('../img/one.jpg');
 }
 
+.last {
+    background-color: rgba(213,6,28,0.76);
+}
+
 #controlBoard {
     min-width: 100%;
     height: 250px;
