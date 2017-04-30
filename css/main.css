@@ -77,7 +77,7 @@
 }
 
 .iWireGrid {
-    margin-top: 0%;
+    margin-top: 0;
 }
 
 .oWireGrid {
@@ -150,14 +150,14 @@
     background-size: 100% 100%;
 }
 
-.starter0 {
+.starter0, .zero {
     border: 1px solid #000000;
     background-color: rgba(42,134,11,0.31);
     background-size: 100% 100%;
     background-image: url('../img/zero.jpg');
 }
 
-.starter1 {
+.starter1, .one {
     border: 1px solid #000000;
     background-color: rgba(42,134,11,0.31);
     background-size: 100% 100%;
