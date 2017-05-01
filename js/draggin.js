@@ -56,7 +56,7 @@ function init() {
                 grid.removeClass(Dir.RIGHT);
 
                 //tWire can only go down into an iWire row, which is every fourth row starting at 3rd
-                if (grid.hasClass(Type.TWIRE) && grid.data('col') % 4 !== 3)
+                if (grid.hasClass(Type.TWIRE) && grid.data('col') % 4 !== 1)
                     grid.removeClass('active');
 
                 //Bottom row cannot go down,
@@ -135,7 +135,7 @@ function setBreadBoard() {
     var lasts = [];
 
     //Set data and class for each grid square with row and column
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < 7; i++) {
         var j = 0;
         $('.row-' + i).find($("[class*='Grid']")).each(function () {
             $(this).data('row', i).data('col', j);
@@ -147,9 +147,9 @@ function setBreadBoard() {
     setInitialValues();
 
     //Set last elements
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 7; i++) {
         var grid = $('.' + i.toString() + lasts[i].toString());
-        if (grid.hasClass('gateGrid') && grid.data('row') !== 1)
+        if (grid.hasClass('gateGrid'))
             grid.addClass('result');
 
     }
@@ -229,22 +229,22 @@ function setInitialValues() {
         var row = curr.data('row');
 
         if (scenario === 0) {
-            if (row === 1) {
+            if (row === 0) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
 
-            else if (row === 3) {
+            else if (row === 2) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
 
-            else if (row === 5) {
+            else if (row === 4) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
 
-            else if (row === 7) {
+            else if (row === 6) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
@@ -252,22 +252,22 @@ function setInitialValues() {
 
 
         else if (scenario === 1) {
-            if (row === 1) {
+            if (row === 0) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
 
-            else if (row === 3) {
+            else if (row === 2) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
 
-            else if (row === 5) {
+            else if (row === 4) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
 
-            else if (row === 7) {
+            else if (row === 6) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
@@ -275,44 +275,44 @@ function setInitialValues() {
 
 
         else if (scenario === 2) {
-            if (row === 1) {
+            if (row === 0) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
 
-            else if (row === 3) {
+            else if (row === 2) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
 
-            else if (row === 5) {
+            else if (row === 4) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
 
-            else if (row === 7) {
+            else if (row === 6) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
         }
 
         else if (scenario === 3) {
-            if (row === 1) {
+            if (row === 0) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
 
-            else if (row === 3) {
+            else if (row === 2) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
 
-            else if (row === 5) {
+            else if (row === 4) {
                 curr.addClass("starter" + 0);
                 curr.data('value', 0);
             }
 
-            else if (row === 7) {
+            else if (row === 6) {
                 curr.addClass("starter" + 1);
                 curr.data('value', 1);
             }
@@ -389,7 +389,6 @@ function checkResult() {
         if (scenario === 0) {
             if (val !== 1 || val === undefined) {
                 success = false;
-                alert(i + ": " + val);
             }
 
         }
@@ -607,8 +606,14 @@ function processWire(source) {
     if (sourceDir === Dir.RIGHT) {
 
         if (sourceType === Type.OWIRE) {
+
             destRow1 = sourceRow;
-            destCol1 = sourceCol + 2; // +2 because of stacked iWireGrids
+
+            //If oWire is the final one
+            if (sourceCol === 9)
+                destCol1 = sourceCol + 1;
+            else
+                destCol1 = sourceCol + 2; // +2 because of stacked iWireGrids
             //alert(sourceDir + " " + sourceRow + ", " + sourceCol + "\n" + destRow1 + ", " + destCol1);
         }
 
@@ -634,7 +639,7 @@ function processWire(source) {
 
         if (sourceType === Type.OWIRE) {
             destRow1 = sourceRow + 1;
-            destCol1 = sourceCol + 1; // +1 because tWire is offset by 1
+            destCol1 = sourceCol - 1; // -1 because tWire is offset by 1
             //alert(sourceDir + " " + sourceRow + ", " + sourceCol + "\n" + destRow1 + ", " + destCol1);
         }
 
@@ -648,14 +653,14 @@ function processWire(source) {
             //Source is bottom iWire
             else {
                 destRow1 = sourceRow + 1;
-                destCol1 = sourceCol;
+                destCol1 = sourceCol - 2;
             }
         }
 
         //If tWire has down, it is going to a top iWire
         else if (sourceType === Type.TWIRE) {
             destRow1 = sourceRow + 1;
-            destCol1 = sourceCol - 1;
+            destCol1 = sourceCol + 1;
         }
     }
 
@@ -668,8 +673,8 @@ function processWire(source) {
             //alert(sourceDir + " " + sourceRow + ", " + sourceCol + "\n" + destRow1 + ", " + destCol1);
 
             //Down
-            destRow2 = sourceRow + 1;
-            destCol2 = sourceCol + 1; // +1 because tWire is offset by 1
+            destRow1 = sourceRow + 1;
+            destCol1 = sourceCol - 1; // -1 because tWire is offset by 1
             //alert(sourceDir + " " + sourceRow + ", " + sourceCol + "\n" + destRow2 + ", " + destCol2);
         }
 
@@ -682,7 +687,7 @@ function processWire(source) {
 
                 //Down
                 destRow2 = sourceRow;
-                destCol2 = sourceCol + 1;
+                destCol1 = sourceCol - 2;
             }
             //Source is bottom iWire
             else {
@@ -704,7 +709,7 @@ function processWire(source) {
 
             //Down
             destRow2 = sourceRow + 1;
-            destCol2 = sourceCol - 1;
+            destCol2 = sourceCol + 1;
         }
 
         //Set this for all source directions
