@@ -164,7 +164,7 @@
     background-image: url('../img/one.jpg');
 }
 
-.last {
+.result {
     background-color: rgba(213,6,28,0.76);
 }
 
@@ -188,6 +188,7 @@
     margin: 5px;
 }
 
-#startButton, #nextButton {
+#startButton, #nextButton #startOver {
     border: 1px solid darkseagreen;
+    margin: 3px;
 }

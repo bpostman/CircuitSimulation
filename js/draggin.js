@@ -45,24 +45,6 @@ function init() {
         accept: '.newGate'
     });
 
-
-    //Click handler for gate grids
-   /* $('.gateGrid').click(function () {
-        if (setup) {
-            var gate = $(this);
-            if (gate.hasClass('active')) {
-                gate.removeClass('active');
-                gate.addClass('droppable');
-            }
-
-            else if (gate.hasClass('droppable')) {
-                gate.addClass('active');
-                gate.removeClass('droppable');
-            }
-        }
-    });
-*/
-
     //Click handler for wire grids
     $('.wireGrid').click(function () {
         if (setup) {
@@ -106,28 +88,6 @@ function init() {
     });
 
 
-    //Handler for start button
-    $('#startButton').click(function () {
-        if (setup) {
-            setup = false;
-
-            start();
-            if (scenario === 0) {
-                var button = '<button type="button" id="nextButton">Next Level</button>';
-                $('#buttonContainer').append(button);
-
-                //Handler for the next level button
-                $('#nextButton').click(function () {
-                    alert("HIT");
-                    scenario++;
-                    setScenario();
-                });
-            }
-        }
-    });
-
-
-
 }
 
 /****************************************************************************/
@@ -163,7 +123,16 @@ function myHelper() {
 
 
 //Gives column, row, and class information to each gridsquare
-function assignPositions() {
+function setBreadBoard() {
+
+    //Remove all placed gates, set all wires to inactive
+    $('#breadBoard').find('*').each(function(){
+        $(this).removeClass('hasGate NAND NOR AND OR active right split down zero one');
+
+        if ($(this).hasClass('gateGrid'))
+            $(this).addClass('droppable');
+    });
+
     var lasts = [];
 
     //Set data and class for each grid square with row and column
@@ -187,8 +156,8 @@ function assignPositions() {
     //Set last elements
     for (i = 0; i < 8; i++) {
         var grid = $('.' + i.toString() + lasts[i].toString());
-        if (grid.hasClass('gateGrid'))
-            grid.addClass('last');
+        if (grid.hasClass('gateGrid') && grid.data('row') !== 1)
+            grid.addClass('result');
 
     }
 }
@@ -196,6 +165,13 @@ function assignPositions() {
 
 //Sets up control board
 function setControlBoard() {
+
+    //Clear control board first
+    $('#gates').find('*').remove('*');
+
+    var buttonContainer = $('#buttonContainer');
+    buttonContainer.find('*').remove('*');
+
     for (var i = 0; i < 4; i++) {
         getGate(i).appendTo('#gates').draggable({
             cursor: 'move',
@@ -205,7 +181,15 @@ function setControlBoard() {
     }
 
     var button = '<button type="button" id="startButton">Start</button>';
-    $('#buttonContainer').append(button);
+    buttonContainer.append(button);
+
+    //Handler for start button
+    $('#startButton').click(function () {
+        if (setup) {
+            setup = false;
+            start();
+        }
+    });
 }
 
 
@@ -228,21 +212,13 @@ function getGate(num) {
 
 function setScenario() {
 
-    if (scenario === 0) {
-        //Assign row and column data to each grid
-        assignPositions();
+    alert(scenario);
 
-        //Setup for control board
-        setControlBoard();
-    }
+    //Assign row and column data to each grid
+    setBreadBoard();
 
-    //Remove all placed gates, set all wires to inactive
-    $('#breadBoard').find('*').each(function(){
-        $(this).removeClass('hasGate NAND NOR AND OR active right split down zero one');
-
-        if ($(this).hasClass('gateGrid'))
-            $(this).addClass('droppable');
-    });
+    //Setup for control board
+    setControlBoard();
 
     setup = true;
 
@@ -276,7 +252,44 @@ function start() {
 
         });
     }
+
+    checkResult();
 }
+
+function checkResult() {
+
+    var success = true;
+    //Scenario 0 expects true at all three gates
+    if (scenario === 0) {
+        $('result').each(function() {
+            if ($(this).data('value') !== 1 || $(this).data('value') === undefined)
+                success = false;
+        });
+
+    }
+    if (success) {
+        alert("You succeeded, click 'Next Level' to proceed");
+
+        var button = '<button type="button" id="nextButton">Next Level</button>';
+        $('#buttonContainer').append(button);
+
+        //Handler for the next level button
+        $('#nextButton').click(function () {
+            scenario++;
+            setScenario();
+        });
+
+    }
+    else {
+        alert("You failed, click 'start over' to play again");
+        //Handler for the start over button
+        $('#startOver').click(function () {
+            setScenario();
+        });
+    }
+
+}
+
 
 function processGate(source) {
 
