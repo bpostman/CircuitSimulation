@@ -50,30 +50,30 @@ function init() {
         if (setup) {
             var grid = $(this);
 
-            //If grid is active with right, remove right, add down
+
             if (grid.hasClass('active') && grid.hasClass(Dir.RIGHT)) {
 
                 grid.removeClass(Dir.RIGHT);
 
-                //tWire can only go down into an iWire row, which is every fourth row starting at 3rd
                 if (grid.hasClass(Type.TWIRE) && grid.data('col') % 4 !== 1)
                     grid.removeClass('active');
 
-                //Bottom row cannot go down,
-                else if (grid.data('row') !== 7 || grid.data('col') % 2 === 0)
+                else if ((grid.data('row') !== 6  || grid.data('col') % 2 === 0) && (grid.data('col' !== 9) && !grid.hasClass(Type.OWIRE)))
                     grid.addClass(Dir.DOWN);
 
                 else
                     grid.removeClass('active');
             }
 
-            //If grid is active with down, remove down and add right_down
+
             else if (grid.hasClass('active') && grid.hasClass(Dir.DOWN)) {
                 grid.removeClass(Dir.DOWN);
-                grid.addClass(Dir.SPLIT);
+                if ((grid.hasClass(Type.TWIRE) && grid.data('col') === 5) || grid.hasClass(Type.OWIRE) && grid.data('col') === 1)
+                    grid.removeClass('active');
+                else
+                    grid.addClass(Dir.SPLIT);
             }
 
-            //If grid is active with split, remove split and active
             else if (grid.hasClass('active') && grid.hasClass(Dir.SPLIT)) {
                 grid.removeClass(Dir.SPLIT);
                 grid.removeClass('active');
@@ -82,7 +82,11 @@ function init() {
             //If grid is not active, add active and right
             else if (!grid.hasClass('active')) {
                 grid.addClass('active');
-                grid.addClass(Dir.RIGHT);
+
+                if ((grid.hasClass(Type.TWIRE) && grid.data('col') === 5) || grid.hasClass(Type.OWIRE) && grid.data('col') === 1)
+                    grid.addClass(Dir.DOWN);
+                else
+                    grid.addClass(Dir.RIGHT);
             }
         }
     });
