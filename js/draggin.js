@@ -122,12 +122,11 @@ function myHelper() {
 }
 
 
-//Gives column, row, and class information to each gridsquare
 function setBreadBoard() {
 
     //Remove all placed gates, set all wires to inactive
     $('#breadBoard').find('*').each(function(){
-        $(this).removeClass('hasGate NAND NOR AND OR active right split down zero one');
+        $(this).removeClass('hasGate NAND NOR AND OR active right split down zero one starter1 starter0');
 
         if ($(this).hasClass('gateGrid'))
             $(this).addClass('droppable');
@@ -145,13 +144,7 @@ function setBreadBoard() {
         });
         lasts.push(--j);
     }
-
-    //Assign initial values to starting grids
-    var val = 0;
-    $('.starter').each(function() {
-        $(this).addClass("starter"+val%2);
-        $(this).data('value', val++ % 2);
-    });
+    setInitialValues();
 
     //Set last elements
     for (i = 0; i < 8; i++) {
@@ -172,13 +165,8 @@ function setControlBoard() {
     var buttonContainer = $('#buttonContainer');
     buttonContainer.find('*').remove('*');
 
-    for (var i = 0; i < 4; i++) {
-        getGate(i).appendTo('#gates').draggable({
-            cursor: 'move',
-            helper: myHelper,
-            revert: true
-        });
-    }
+    getGates();
+
 
     var button = '<button type="button" id="startButton">Start</button>';
     buttonContainer.append(button);
@@ -194,34 +182,143 @@ function setControlBoard() {
 
 
 //Utility function to return the correct type of gate
-function getGate(num) {
-    if (num % 4 === 0) {
-        return $('<div class="NAND newGate"></div>').data("type", "NAND");
+function getGates() {
+
+    //Declare and define different gates with their draggable methods
+    var NAND = $('<div class="NAND newGate"></div>').data("type", "NAND").
+        draggable({ cursor: 'move', helper: myHelper, revert: true });
+    var NOR = $('<div class="NOR newGate"></div>').data("type", "NOR").
+        draggable({ cursor: 'move', helper: myHelper, revert: true });
+    var AND = $('<div class="OR newGate"></div>').data("type", "OR").
+        draggable({ cursor: 'move', helper: myHelper, revert: true });
+    var OR = $('<div class="AND newGate"></div>').data("type", "AND").
+        draggable({ cursor: 'move', helper: myHelper, revert: true });
+
+    if (scenario === 0) {
+        NAND.appendTo('#gates');
+        NOR.appendTo('#gates');
+        AND.appendTo('#gates');
+        OR.appendTo('#gates');
     }
-    else if (num % 4 === 1) {
-        return $('<div class="NOR newGate"></div>').data("type", "NOR");
+
+    else if (scenario === 1) {
+        NAND.appendTo('#gates');
+        NOR.appendTo('#gates');
     }
-    else if (num % 4 === 2) {
-        return $('<div class="OR newGate"></div>').data("type", "OR");
+
+    else if (scenario === 2) {
+        NOR.appendTo('#gates');
+        OR.appendTo('#gates');
     }
-    else if (num % 4 === 3) {
-        return $('<div class="AND newGate"></div>').data("type", "AND");
+
+    else if (scenario === 3) {
+        NAND.appendTo('#gates');
+        AND.appendTo('#gates');
+    }
+
+    else if (scenario === 4) {
+        NAND.appendTo('#gates');
     }
 }
 
+//Gives initial values to starter grids depending on scenario
+function setInitialValues() {
+    $('.starter').each(function () {
 
-function setScenario() {
+        var curr = $(this);
+        var row = curr.data('row');
 
-    alert(scenario);
+        if (scenario === 0) {
+            if (row === 1) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
 
-    //Assign row and column data to each grid
-    setBreadBoard();
+            else if (row === 3) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
 
-    //Setup for control board
-    setControlBoard();
+            else if (row === 5) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
 
-    setup = true;
+            else if (row === 7) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+        }
 
+
+        else if (scenario === 1) {
+            if (row === 1) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
+
+            else if (row === 3) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
+
+            else if (row === 5) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
+
+            else if (row === 7) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
+        }
+
+
+        else if (scenario === 2) {
+            if (row === 1) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+
+            else if (row === 3) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+
+            else if (row === 5) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+
+            else if (row === 7) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+        }
+
+        else if (scenario === 3) {
+            if (row === 1) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+
+            else if (row === 3) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
+
+            else if (row === 5) {
+                curr.addClass("starter" + 0);
+                curr.data('value', 0);
+            }
+
+            else if (row === 7) {
+                curr.addClass("starter" + 1);
+                curr.data('value', 1);
+            }
+        }
+
+    });
 }
 
 
@@ -256,20 +353,84 @@ function start() {
     checkResult();
 }
 
+function setScenario() {
+
+    if (scenario === 0)
+        alert("Welcome to the game. You must get a value of 1 to each red square");
+    else if (scenario === 1)
+        alert("Congratulations on making it to level 2. You must get a value of 1 to the top red square, " +
+            "0 to the middle red square, and 1 to the bottom red square.");
+    else if (scenario === 2)
+        alert("Good work on level 2. This round, you must get a value of 1 to each red square.");
+    else if (scenario === 3)
+        alert("You've reached the final level. This round, you must get a value of 0 to the top red square, " +
+            "1 to the middle red square, and 0 to the bottom red square.");
+
+
+    //Assign row and column data to each grid
+    setBreadBoard();
+
+    //Setup for control board
+    setControlBoard();
+
+    setup = true;
+
+}
+
+
 function checkResult() {
 
     var success = true;
-    //Scenario 0 expects true at all three gates
-    if (scenario === 0) {
-        $('result').each(function() {
-            if ($(this).data('value') !== 1 || $(this).data('value') === undefined)
-                success = false;
-        });
+    $('.result').each(function(i) {
+        var curr = $(this);
+        var val = curr.data('value');
 
-    }
+        //Scenario 0 expects 1 at all three results gates
+        if (scenario === 0) {
+            if (val !== 1 || val === undefined) {
+                success = false;
+                alert(i + ": " + val);
+            }
+
+        }
+
+        else if (scenario === 1) {
+            if (i === 0 && val !== 1)
+                success = false;
+            if (i === 1 && val !== 0)
+                success = false;
+            if (i === 2 && val !== 1)
+                success = false;
+        }
+
+        //Scenario 2 expects 0 at all three results gates
+        if (scenario === 2) {
+            if (val !== 0 || val === undefined)
+                success = false;
+        }
+
+        else if (scenario === 3) {
+            if (i === 0 && val !== 0)
+                success = false;
+            if (i === 1 && val !== 1)
+                success = false;
+            if (i === 2 && val !== 0)
+                success = false;
+        }
+    });
+
+
+
     if (success) {
+
+        if (scenario === 3) {
+            alert("You have won the game, congratulations!");
+            return;
+        }
+
         alert("You succeeded, click 'Next Level' to proceed");
 
+        //noinspection JSDuplicatedDeclaration
         var button = '<button type="button" id="nextButton">Next Level</button>';
         $('#buttonContainer').append(button);
 
@@ -280,8 +441,14 @@ function checkResult() {
         });
 
     }
+
     else {
         alert("You failed, click 'start over' to play again");
+
+        //noinspection JSDuplicatedDeclaration
+        var button = '<button type="button" id="startOver">Start Over</button>';
+        $('#buttonContainer').append(button);
+
         //Handler for the start over button
         $('#startOver').click(function () {
             setScenario();
