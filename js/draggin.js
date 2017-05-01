@@ -68,7 +68,7 @@ function init() {
 
             else if (grid.hasClass('active') && grid.hasClass(Dir.DOWN)) {
                 grid.removeClass(Dir.DOWN);
-                if ((grid.hasClass(Type.TWIRE) && grid.data('col') === 5) || grid.hasClass(Type.OWIRE) && grid.data('col') === 1)
+                if ((grid.hasClass(Type.TWIRE) && grid.data('col') === 5) || (grid.hasClass(Type.OWIRE) && grid.data('col') === 1) && grid.data('row') === 0)
                     grid.removeClass('active');
                 else
                     grid.addClass(Dir.SPLIT);
@@ -83,7 +83,7 @@ function init() {
             else if (!grid.hasClass('active')) {
                 grid.addClass('active');
 
-                if ((grid.hasClass(Type.TWIRE) && grid.data('col') === 5) || grid.hasClass(Type.OWIRE) && grid.data('col') === 1)
+                if ((grid.hasClass(Type.TWIRE) && grid.data('col') === 5) || (grid.hasClass(Type.OWIRE) && grid.data('col') === 1) && grid.data('row') === 0)
                     grid.addClass(Dir.DOWN);
                 else
                     grid.addClass(Dir.RIGHT);
@@ -182,6 +182,21 @@ function setControlBoard() {
             start();
         }
     });
+
+    var button = '<button type="button" id="directionsButton">Directions</button>';
+    buttonContainer.append(button);
+
+    //Handler for start button
+    $('#directionsButton').click(function () {
+        alert("This game will test your knowledge of digital circuits through practical application.\n\
+        Click each small square one or more times to create a wire connection. The type of connection offered is dependant on the location of the square.\n\
+        The arrow will indicate the direction that current will flow. Note that current always flows to the right, down, or both.\n\
+        Drag a gate on top of a large square to place it there. If a gate does not have proper inputs, it will not produce proper outputs.\n\
+        Once you are satisfied that your circuit will meet the requirements of the level, hit 'start'. Current will begin to flow, and you will be alerted\
+        to whether or not you produced the correct output for the level.\n\
+        If you did, you will be given the option to continue to the next level. If not, you will have to replay the level.\n\
+        Good luck.")
+    });
 }
 
 
@@ -217,12 +232,9 @@ function getGates() {
 
     else if (scenario === 3) {
         NAND.appendTo('#gates');
-        AND.appendTo('#gates');
+        NOR.appendTo('#gates');
     }
 
-    else if (scenario === 4) {
-        NAND.appendTo('#gates');
-    }
 }
 
 //Gives initial values to starter grids depending on scenario
@@ -360,15 +372,15 @@ function start() {
 function setScenario() {
 
     if (scenario === 0)
-        alert("Welcome to the game. You must get a value of 1 to each red square");
+        alert("Welcome to the game. You must get a value of 1 to each red square. Click the 'Directions' button to get an explanation of how to play");
     else if (scenario === 1)
-        alert("Congratulations on making it to level 2. You must get a value of 1 to the top red square, " +
-            "0 to the middle red square, and 1 to the bottom red square.");
-    else if (scenario === 2)
-        alert("Good work on level 2. This round, you must get a value of 1 to each red square.");
-    else if (scenario === 3)
-        alert("You've reached the final level. This round, you must get a value of 0 to the top red square, " +
+        alert("Congratulations on making it to level 2. You must get a value of 0 to the top red square, " +
             "1 to the middle red square, and 0 to the bottom red square.");
+    else if (scenario === 2)
+        alert("Good work on level 2. This round, you must get a value of 0 to each red square.");
+    else if (scenario === 3)
+        alert("You've reached the final level. This round, you must get a value of 1 to the top red square, " +
+            "0 to the middle red square, and 1 to the bottom red square.");
 
 
     //Assign row and column data to each grid
@@ -398,11 +410,11 @@ function checkResult() {
         }
 
         else if (scenario === 1) {
-            if (i === 0 && val !== 1)
+            if (i === 0 && val !== 0)
                 success = false;
-            if (i === 1 && val !== 0)
+            if (i === 1 && val !== 1)
                 success = false;
-            if (i === 2 && val !== 1)
+            if (i === 2 && val !== 0)
                 success = false;
         }
 
@@ -413,11 +425,11 @@ function checkResult() {
         }
 
         else if (scenario === 3) {
-            if (i === 0 && val !== 0)
+            if (i === 0 && val !== 1)
                 success = false;
-            if (i === 1 && val !== 1)
+            if (i === 1 && val !== 0)
                 success = false;
-            if (i === 2 && val !== 0)
+            if (i === 2 && val !== 1)
                 success = false;
         }
     });
@@ -701,7 +713,7 @@ function processWire(source) {
 
                 //Down
                 destRow2 = sourceRow + 1;
-                destCol2 = sourceCol;
+                destCol2 = sourceCol - 2;
             }
         }
 
