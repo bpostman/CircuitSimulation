@@ -222,7 +222,7 @@ function getGates() {
 
     else if (scenario === 1) {
         NAND.appendTo('#gates');
-        NOR.appendTo('#gates');
+        AND.appendTo('#gates');
     }
 
     else if (scenario === 2) {
@@ -377,7 +377,7 @@ function setScenario() {
         alert("Congratulations on making it to level 2. You must get a value of 0 to the top red square, " +
             "1 to the middle red square, and 0 to the bottom red square.");
     else if (scenario === 2)
-        alert("Good work on level 2. This round, you must get a value of 0 to each red square.");
+        alert("Good work on level 2. This round, you must get a value of 1 to each red square.");
     else if (scenario === 3)
         alert("You've reached the final level. This round, you must get a value of 1 to the top red square, " +
             "0 to the middle red square, and 1 to the bottom red square.");
@@ -420,7 +420,7 @@ function checkResult() {
 
         //Scenario 2 expects 0 at all three results gates
         if (scenario === 2) {
-            if (val !== 0 || val === undefined)
+            if (val !== 1 || val === undefined)
                 success = false;
         }
 
